@@ -15,6 +15,9 @@ public class ButtonListener implements ActionListener{
         BoardButton button = (BoardButton) e.getSource();
         
         game.play(button.getPos());
+        
+        game.setWinner();
+        game.getWinner();
         if (game.getWinner() != null){
             game.setState(GameState.OVER);
             System.out.println("Game Over: " + game.getWinner());

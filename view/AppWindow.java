@@ -11,9 +11,14 @@ import javax.swing.JRadioButton;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicButtonListener;
 
+import view.BoardButton;
+import controller.App;
 import controller.ButtonListener;
 import controller.NewGameButtonListener;
 import controller.StrategyButtonListener;
+import model.Marking;
+import model.PlayStrategy;
+import model.TicTacToeGame;
 
 public class AppWindow extends JFrame {
 
@@ -23,8 +28,8 @@ public class AppWindow extends JFrame {
     private AppCanvas canvas = new AppCanvas();
     private BoardButton[] markingButtons = new BoardButton[9];
     private JButton newGameButton = new JButton("New Game");
-    private JRadioButton vsHumanButton = new JRadioButton(vsHumanAction);
-    private JRadioButton vsComputerButton = new JRadioButton(vsComputerAction);
+    private JRadioButton vsHumanButton;
+    private JRadioButton vsComputerButton;
 
     public void init() {
         var cp = getContentPane();
@@ -48,13 +53,15 @@ public class AppWindow extends JFrame {
         cp.add(southPanel, BorderLayout.SOUTH);
 
         JPanel radioPanel = new JPanel();
+        radioPanel.setBorder(new TitledBorder("Play Strategy"));
+        vsHumanButton = new JRadioButton(vsHumanAction, App.game.getStrategy() == PlayStrategy.VsHuman);
+        vsComputerButton = new JRadioButton(vsComputerAction, App.game.getStrategy() == PlayStrategy.VsComputer);
         radioPanel.add(vsHumanButton);
         radioPanel.add(vsComputerButton);
 
         StrategyButtonListener strategyListener = new StrategyButtonListener();
         vsHumanButton.addActionListener(strategyListener);
         vsComputerButton.addActionListener(strategyListener);
-
 
         ButtonGroup strategyGroup = new ButtonGroup();
         strategyGroup.add(vsHumanButton);
@@ -67,16 +74,42 @@ public class AppWindow extends JFrame {
         newGameButton.addActionListener(new NewGameButtonListener());
 
         JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(buttonListener);
+        exitButton.addActionListener(e -> System.exit(0));
         actionPanel.add(exitButton);
         southPanel.add(actionPanel);
-
-        
-
+        updateWindow();
     }
 
-
     public void updateWindow() {
+        TicTacToeGame game = App.game;
+        Marking[] board = game.getBoard();
+        for (int i = 0; i < board.length; i++) {
+            markingButtons[i].setMark(board[i]);
+        }
+        switch (game.getState()) {
+            case INIT:
+                for (var b : markingButtons) {
+                    b.setEnabled(false);
+                }
+                newGameButton.setEnabled(true);
+                break;
+            case PLAYING:
+                newGameButton.setEnabled(false);
+                vsHumanButton.setEnabled(false);
+                vsComputerButton.setEnabled(false);
+                for(int i = 0; i < board.length; i++){
+                    markingButtons[i].setEnabled(board[i]== Marking.U);
+                }
+                break;
+                case OVER:
+                newGameButton.setEnabled(true);
+                vsHumanButton.setEnabled(true);
+                vsComputerButton.setEnabled(true);
+                for(var b: markingButtons){
+                    b.setEnabled(false);
+                }
+                break;
+        }
 
         canvas.repaint();
     }

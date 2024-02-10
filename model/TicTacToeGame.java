@@ -11,8 +11,14 @@ public class TicTacToeGame {
     public TicTacToeGame() {
         reset();
     }
+
     public Marking getWinner() {
         return winner;
+    }
+
+
+    public Marking getTurn(){
+        return turn;
     }
 
     public void reset() {
@@ -24,56 +30,83 @@ public class TicTacToeGame {
         winner = null;
     }
 
-
-    public GameState getState(){
+    public GameState getState() {
         return state;
     }
 
-    public void setState(GameState state){
+    public void setState(GameState state) {
         this.state = state;
     }
 
-    public void changeTurns(){
+    public void changeTurns() {
         turn = (turn == Marking.X) ? Marking.O : Marking.X;
     }
 
-    public void play(int position){
-        if(strategy == PlayStrategy.VsHuman ){
+    public void play(int position) {
+        if (strategy == PlayStrategy.VsHuman) {
             humanPlayer(position);
-        } else if(strategy == PlayStrategy.VsComputer){
-
+        } else if (strategy == PlayStrategy.VsComputer) {
+            humanPlayer(position);
+            setWinner();
+            if (getWinner() != null){
+                return;
+            }
+            changeTurns();
+            computerPlayer();
+            setWinner();
         }
     }
-    private void humanPlayer(int pos){
+    private void computerPlayer(){
+        int pos = computerPick();
         board[pos] = turn;
         ++moves;
     }
 
+    private int computerPick(){
+        int pos = -1;
+        for (int i = 0; i < board.length; i++){
+            if(board[i] == Marking.U){
+                pos = i;
+                break;
+            }
+        }
+        assert pos >= 0 : "Invalid position from ComputerPick()";
+        return pos;
+    }
+
+    private void humanPlayer(int pos) {
+        board[pos] = turn;
+        ++moves;
+    }
+    public PlayStrategy getStrategy(){
+        return strategy;
+    }
     public void setWinner() {
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             winner = checkCol(i);
-            if(winner != null){
+            if (winner != null) {
                 return;
             }
             winner = checkRow(i);
-            if (winner != null){
+            if (winner != null) {
                 return;
             }
         }
         winner = checkDiag1();
-        if(winner != null){
+        if (winner != null) {
             return;
         }
         winner = checkDiag2();
-        if (winner != null){
+        if (winner != null) {
             return;
         }
-        if(moves == 9){
+        if (moves == 9) {
             winner = Marking.U;
             return;
         }
         winner = null;
-    }  
+    }
+  
 
     private Marking checkRow(int n) {
         int r = n * 3;
@@ -96,32 +129,33 @@ public class TicTacToeGame {
         }
     }
 
-    private Marking checkDiag1(){
+    private Marking checkDiag1() {
         if (board[0] != Marking.U &&
-        board[0] == board[4] &&
-        board[0] == board[8]){
+                board[0] == board[4] &&
+                board[0] == board[8]) {
             return board[0];
-        } else { 
+        } else {
             return null; // no winner
         }
     }
 
     private Marking checkDiag2() {
         if (board[2] != Marking.U &&
-        board[2] == board[4] &&
-        board[2] == board[6]){
+                board[2] == board[4] &&
+                board[2] == board[6]) {
             return board[2];
-        } else { 
+        } else {
             return null; // no winner
         }
     }
-
 
     public void setStrategy(PlayStrategy strategy) {
         this.strategy = strategy;
     }
 
-
+    public Marking[] getBoard() {
+        return board;
+    }
 
     @Override
     public String toString() {
@@ -131,4 +165,5 @@ public class TicTacToeGame {
         var r4 = String.format("Winner: %s (moves: %d)\n", winner, moves);
         return r1 + r2 + r3 + r4;
     }
+
 }

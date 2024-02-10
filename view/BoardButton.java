@@ -27,6 +27,13 @@ public class BoardButton extends JButton{
         if(mark == Marking.U){
             label = ".";
             setText(label);
+        }else if(mark == Marking.X){
+            label = "X";
+            setText(label);
+        } else if(mark == Marking.O){
+            label = "O";
+            setText(label);
         }
     }
+
 }
