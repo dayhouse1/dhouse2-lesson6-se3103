@@ -3,7 +3,7 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import model.GameState;
+
 import model.TicTacToeGame;
 import view.BoardButton;
 
@@ -19,7 +19,7 @@ public class ButtonListener implements ActionListener{
         game.setWinner();
         game.getWinner();
         if (game.getWinner() != null){
-            game.setState(GameState.OVER);
+            App.win.goNextState();
             System.out.println("Game Over: " + game.getWinner());
         } else{
             game.changeTurns();

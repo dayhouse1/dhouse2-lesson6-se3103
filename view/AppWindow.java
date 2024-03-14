@@ -9,27 +9,26 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.basic.BasicButtonListener;
-
-import view.BoardButton;
+import view.statePattern.GameState;
+import view.statePattern.GameStateinit;
 import controller.App;
 import controller.ButtonListener;
 import controller.NewGameButtonListener;
 import controller.StrategyButtonListener;
-import model.Marking;
 import model.PlayStrategy;
-import model.TicTacToeGame;
 
 public class AppWindow extends JFrame {
 
     public static final String vsHumanAction = "vs. Human";
     public static final String vsComputerAction = "vs. Computer";
 
-    private AppCanvas canvas = new AppCanvas();
-    private BoardButton[] markingButtons = new BoardButton[9];
-    private JButton newGameButton = new JButton("New Game");
-    private JRadioButton vsHumanButton;
-    private JRadioButton vsComputerButton;
+    public AppCanvas canvas = new AppCanvas();
+    public BoardButton[] markingButtons = new BoardButton[9];
+    public JButton newGameButton = new JButton("New Game");
+    public JRadioButton vsHumanButton;
+    public JRadioButton vsComputerButton;
+
+    private GameState state = new GameStateinit();
 
     public void init() {
         var cp = getContentPane();
@@ -80,37 +79,20 @@ public class AppWindow extends JFrame {
         updateWindow();
     }
 
-    public void updateWindow() {
-        TicTacToeGame game = App.game;
-        Marking[] board = game.getBoard();
-        for (int i = 0; i < board.length; i++) {
-            markingButtons[i].setMark(board[i]);
-        }
-        switch (game.getState()) {
-            case INIT:
-                for (var b : markingButtons) {
-                    b.setEnabled(false);
-                }
-                newGameButton.setEnabled(true);
-                break;
-            case PLAYING:
-                newGameButton.setEnabled(false);
-                vsHumanButton.setEnabled(false);
-                vsComputerButton.setEnabled(false);
-                for(int i = 0; i < board.length; i++){
-                    markingButtons[i].setEnabled(board[i]== Marking.U);
-                }
-                break;
-                case OVER:
-                newGameButton.setEnabled(true);
-                vsHumanButton.setEnabled(true);
-                vsComputerButton.setEnabled(true);
-                for(var b: markingButtons){
-                    b.setEnabled(false);
-                }
-                break;
-        }
+    public void goNextState() {
+        state.goNext(this);
+    }
 
+    public GameState getGameState() {
+        return state;
+    }
+
+    public void setGameState(GameState state) {
+        this.state = state;
+    }
+
+    public void updateWindow() {
+        state.updateWindow();
         canvas.repaint();
     }
 
