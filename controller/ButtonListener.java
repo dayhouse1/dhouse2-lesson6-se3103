@@ -14,7 +14,7 @@ public class ButtonListener implements ActionListener{
         TicTacToeGame game = App.game;
         BoardButton button = (BoardButton) e.getSource();
         
-        game.play(button.getPos());
+        game.getStrategy().play(button.getPos());
         
         game.setWinner();
         game.getWinner();
