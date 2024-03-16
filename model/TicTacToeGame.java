@@ -1,15 +1,19 @@
 package model;
 
+import model.strategyPattern.PlayStrategy;
+import model.strategyPattern.VsHumanStrategy;
+
 public class TicTacToeGame {
     private Marking[] board = new Marking[9];
     private Marking turn = Marking.X; // X starts first
     private int moves = 0;
     private Marking winner = null; // O or X or U
     
-    private PlayStrategy strategy = PlayStrategy.VsHuman;
+    private PlayStrategy strategy = new VsHumanStrategy(this);
 
     public TicTacToeGame() {
         reset();
+        setStrategy(new VsHumanStrategy(this));
     }
 
     public Marking getWinner() {
@@ -21,6 +25,10 @@ public class TicTacToeGame {
         return turn;
     }
 
+
+    public void incMoves(){
+        ++moves;
+    }
     public void reset() {
         for (int i = 0; i < board.length; i++) {
             board[i] = Marking.U;
@@ -36,45 +44,9 @@ public class TicTacToeGame {
         turn = (turn == Marking.X) ? Marking.O : Marking.X;
     }
 
-    public void play(int position) {
-        if (strategy == PlayStrategy.VsHuman) {
-            humanPlayer(position);
-        } else if (strategy == PlayStrategy.VsComputer) {
-            humanPlayer(position);
-            setWinner();
-            if (getWinner() != null){
-                return;
-            }
-            changeTurns();
-            computerPlayer();
-            setWinner();
-        }
-    }
-    private void computerPlayer(){
-        int pos = computerPick();
-        board[pos] = turn;
-        ++moves;
-    }
+  
 
-    private int computerPick(){
-        int pos = -1;
-        for (int i = 0; i < board.length; i++){
-            if(board[i] == Marking.U){
-                pos = i;
-                break;
-            }
-        }
-        assert pos >= 0 : "Invalid position from ComputerPick()";
-        return pos;
-    }
-
-    private void humanPlayer(int pos) {
-        board[pos] = turn;
-        ++moves;
-    }
-    public PlayStrategy getStrategy(){
-        return strategy;
-    }
+    
     public void setWinner() {
         for (int i = 0; i < 3; i++) {
             winner = checkCol(i);
@@ -145,6 +117,10 @@ public class TicTacToeGame {
 
     public void setStrategy(PlayStrategy strategy) {
         this.strategy = strategy;
+    }
+
+    public PlayStrategy getStrategy(){
+        return strategy;
     }
 
     public Marking[] getBoard() {
