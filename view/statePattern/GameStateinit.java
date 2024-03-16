@@ -21,6 +21,7 @@ public class GameStateinit implements GameState {
         App.win.newGameButton.setEnabled(true);
         App.win.vsComputerButton.setEnabled(true);
         App.win.vsHumanButton.setEnabled(true);
+        App.win.vsSmartComputerButton.setEnabled(true);
 
         App.win.canvas.repaint();
     }
